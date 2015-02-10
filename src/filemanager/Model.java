@@ -33,10 +33,10 @@ public class Model extends Observable{
     }
 
     public List<File> getFileListByDriveName(int drive_id){
+        stackOfFilePath.push(new File(systemDrivers.get(drive_id).getPath()));
+        currentActivePath = systemDrivers.get(drive_id).getPath();
         if(systemDrivers.get(drive_id).listFiles() != null) {
             files = Arrays.asList(systemDrivers.get(drive_id).listFiles());
-            stackOfFilePath.push(new File(systemDrivers.get(drive_id).getPath()));
-            currentActivePath = systemDrivers.get(drive_id).getPath();
             return files;
         }else
             return null;

@@ -30,30 +30,32 @@ enum Byte {
 
 public class View extends JFrame implements Observer{
     private Byte bytes = Byte.GB;
-    private JComboBox jcb, jcb2;
+    private JComboBox driveNameComboBox, driveNameComboBox2;
     private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
-    private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
+    private JLabel pathLabel, pathLabel2, labelMemory, labelMemory2, labelCommandLine;
     private JTextField commandLine;
     private DefaultListModel listModel, listModel2;
     private JList listOfFiles, listOfFiles2;
+    private JFrame helpFrame = new JFrame("Help");
+    private JFrame errorFrame = new JFrame("Error");
     private int frameSizeX = 800;
     private int frameSizeY = 600;
     private int countButton = 7;
 
-    public JComboBox getJcb() {
-        return jcb;
+    public JComboBox getDriveNameComboBox() {
+        return driveNameComboBox;
     }
 
-    public JComboBox getJcb2() {
-        return jcb2;
+    public JComboBox getDriveNameComboBox2() {
+        return driveNameComboBox2;
     }
 
-    public JLabel getLabelDisk() {
-        return labelDisk;
+    public JLabel getPathLabel() {
+        return pathLabel;
     }
 
-    public JLabel getLabelDisk2() {
-        return labelDisk2;
+    public JLabel getPathLabel2() {
+        return pathLabel2;
     }
 
     public JLabel getLabelMemory2() {
@@ -127,19 +129,19 @@ public class View extends JFrame implements Observer{
 
         JPanel leftTopPanel = new JPanel();
         leftTopPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        jcb = new JComboBox();
-        leftTopPanel.add(jcb);
-        labelDisk = new JLabel();
-        leftTopPanel.add(labelDisk);
+        driveNameComboBox = new JComboBox();
+        leftTopPanel.add(driveNameComboBox);
+        pathLabel = new JLabel();
+        leftTopPanel.add(pathLabel);
         labelMemory = new JLabel();
         leftTopPanel.add(labelMemory);
 
         JPanel rightTopPanel = new JPanel();
         rightTopPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        jcb2 = new JComboBox();
-        rightTopPanel.add(jcb2);
-        labelDisk2 = new JLabel();
-        rightTopPanel.add(labelDisk2);
+        driveNameComboBox2 = new JComboBox();
+        rightTopPanel.add(driveNameComboBox2);
+        pathLabel2 = new JLabel();
+        rightTopPanel.add(pathLabel2);
         labelMemory2 = new JLabel();
         rightTopPanel.add(labelMemory2);
 
@@ -201,6 +203,23 @@ public class View extends JFrame implements Observer{
         this.setResizable(false);
     }
 
+    public void makeHelpFrame(){
+        helpFrame.setSize(frameSizeX/2, frameSizeY);
+        helpFrame.setLayout(new GridBagLayout());
+        String text = "Help menu";
+        JLabel textLabel = new JLabel("<html>" + text + "<html>");
+        helpFrame.add(textLabel);
+        helpFrame.setVisible(true);
+    }
+
+    public void makeErrorFrame(String textError){
+        errorFrame.setSize(frameSizeX/4, frameSizeY/4);
+        errorFrame.setLayout(new GridBagLayout());
+        JLabel textLabel = new JLabel("<html>" + textError + "<html>");
+        errorFrame.add(textLabel);
+        errorFrame.setVisible(true);
+    }
+
     // This inner class is needed to input icons + text in comboBoxes
     public class IconListRenderer
             extends DefaultListCellRenderer {
@@ -233,38 +252,38 @@ public class View extends JFrame implements Observer{
         }
     }
 
-    // This method fills combobox with disk letters and icons
-    public void fillDisksCombos(JComboBox jcb, List<File> files) {
-        try {
+    // This method fills comboboxes with driver letters and icons
+    public void fillDriverNameComboBoxes(JComboBox driverNameComboBox, List<File> files) {
+        if(files != null) {
             Map<Object, Icon> icons = new HashMap<Object, Icon>();
             for (File f : files) {
                 icons.put(f.toString(), FileSystemView.getFileSystemView().getSystemIcon(f));
             }
             for (File f : files) {
-                jcb.addItem(f.toString());
+                driverNameComboBox.addItem(f.toString());
             }
-            jcb.setRenderer(new IconListRenderer(icons)); // this string is for correct output of combobox
-        }catch(Exception e){/***/}      //correct!!!
+            driverNameComboBox.setRenderer(new IconListRenderer(icons)); // this string is for correct output of combobox
+        }
     }
-    //This is only for initiaization
-    public void fillDisksNameLabels(JComboBox jcb, JLabel labelDisk){
-        File f = new File(jcb.getSelectedItem().toString());
+    //This method isn't used
+    public void fillDriverNameLabels(JComboBox driverNameComboBox, JLabel labelDisk){
+        File f = new File(driverNameComboBox.getSelectedItem().toString());
         String diskName = FileSystemView.getFileSystemView().getSystemDisplayName(f).toString();
         labelDisk.setText("[" + diskName + "]");
     }
 
-    public void fillPathLabels(String diskPath, JLabel labelDisk){
-        labelDisk.setText("[" + diskPath + "]");
+    public void fillPathLabels(String diskPath, JLabel pathLabel){
+        pathLabel.setText("[" + diskPath + "]");
     }
 
-    //This is only for initiaization
-    public void fillDisksSpaceLabels(JComboBox jcb, JLabel labelMemory){
-        File f = new File(jcb.getSelectedItem().toString());
+    public void fillDriverSpaceLabels(JComboBox driverNameComboBox, JLabel labelMemory){
+        File f = new File(driverNameComboBox.getSelectedItem().toString());
         long Usable = f.getUsableSpace()/bytes.getAmount();
         long Total = f.getTotalSpace()/bytes.getAmount();
         labelMemory.setText(Usable + " " + bytes.getName() + " from " + Total + " " + bytes.getName());
     }
 
+    //This method isn't used, fill list without parent directory path
     public void fillList(DefaultListModel listModel, JList listOfFiles, List<File> files) {
         listModel.clear();
         if(files != null) {
@@ -302,8 +321,8 @@ public class View extends JFrame implements Observer{
     }
 
     public void addActionListener(ActionListener l){
-        jcb.addActionListener(l);
-        jcb2.addActionListener(l);
+        driveNameComboBox.addActionListener(l);
+        driveNameComboBox2.addActionListener(l);
         helpButton.addActionListener(l);
         createFolderButton.addActionListener(l);
         copyButton.addActionListener(l);
@@ -324,7 +343,6 @@ public class View extends JFrame implements Observer{
     public void update(Observable o, Object arg) {
         if(o instanceof Model){
             Model model = (Model) o;
-
         }
     }
 }
