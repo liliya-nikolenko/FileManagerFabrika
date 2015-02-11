@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
-
 enum Byte {
     KB("KB", 1024), MB("MB", 1024 * 1024), GB("GB", 1024 * 1024 * 1024);
     private int amount;
@@ -25,6 +24,52 @@ enum Byte {
 
     public int getAmount() {
         return amount;
+    }
+}
+
+class ModalDialog extends Dialog implements ActionListener{
+    private JTextField textField = new JTextField();
+    private JButton okButton = new JButton("Ok");
+    private JButton cancelButton = new JButton("Cancel");
+    private boolean cancelled;
+
+    public String getEditTitle(){
+        return textField.getText();
+    }
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+    ModalDialog(JFrame parent, String title){
+        super(parent, title, true);
+        if (parent != null) {
+            Dimension parentSize = parent.getSize();
+            Point p = parent.getLocation();
+            setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
+        }
+        setSize(200, 120);
+        setLayout(new GridLayout(2, 2, 3, 3));
+        add(new JLabel("Edit"));
+        add(textField);
+        add(okButton);
+        add(cancelButton);
+        okButton.setActionCommand("okButton");
+        okButton.addActionListener(this);
+        cancelButton.setActionCommand("cancelButton");
+        cancelButton.addActionListener(this);
+        setVisible(true);
+    }
+    public void actionPerformed(ActionEvent e){
+        String command = e.getActionCommand();
+        if (command.equals("okButton")) {
+            this.cancelled = false;
+            setVisible(false);
+        }
+        else if (command.equals("cancelButton")) {
+            this.cancelled = true;
+            setVisible(false);
+        }
+        setVisible(false);
+        dispose();
     }
 }
 
@@ -331,6 +376,7 @@ public class View extends JFrame implements Observer{
         terminalButton.addActionListener(l);
         exitButton.addActionListener(l);
         commandLine.addActionListener(l);
+
     }
 
     public void addMouseClicked(MouseListener l) {

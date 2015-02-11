@@ -60,10 +60,13 @@ public class Controller implements ActionListener, MouseListener{
             view.makeHelpFrame();
         }
         else if(source == view.getCreateFolderButton()){
-            if(activeModel){
-                createNewFolder(model, view.getListModel(), view.getListOfFiles());
-            } else {
-                createNewFolder(model2, view.getListModel2(), view.getListOfFiles2());
+            ModalDialog createFolderDialog = new ModalDialog(view, "Create folder");
+            if(!createFolderDialog.isCancelled()) {
+                if (activeModel) {
+                    createNewFolder(model, view.getListModel(), view.getListOfFiles(), createFolderDialog.getEditTitle());
+                } else {
+                    createNewFolder(model2, view.getListModel2(), view.getListOfFiles2(), createFolderDialog.getEditTitle());
+                }
             }
         }
         else if(source == view.getCopyButton()){
@@ -174,8 +177,8 @@ public class Controller implements ActionListener, MouseListener{
         }
         return false;
     }
-    public void createNewFolder(Model model, DefaultListModel listModel, JList list){
-        boolean success = (new File((model.getCurrentActivePath() + "/New Folder")).mkdirs());
+    public void createNewFolder(Model model, DefaultListModel listModel, JList list, String title){
+        boolean success = (new File((model.getCurrentActivePath() + "/" + title)).mkdirs());
         view.fillList(listModel, list,
                 model.getFileListByPath(new File(model.getCurrentActivePath())), model.getStackOfFilePath().peek());
         if (!success) {
