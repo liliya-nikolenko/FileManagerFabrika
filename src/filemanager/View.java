@@ -76,7 +76,7 @@ class ModalDialog extends Dialog implements ActionListener{
 public class View extends JFrame implements Observer{
     private Byte bytes = Byte.GB;
     private JComboBox driveNameComboBox, driveNameComboBox2;
-    private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
+    private JButton helpButton, createFolderButton, copyButton, removeButton, renameButton, deleteButton, terminalButton, exitButton;
     private JLabel pathLabel, pathLabel2, labelMemory, labelMemory2, labelCommandLine;
     private JTextField commandLine;
     private DefaultListModel listModel, listModel2;
@@ -85,7 +85,7 @@ public class View extends JFrame implements Observer{
     private JFrame errorFrame = new JFrame("Error");
     private int frameSizeX = 800;
     private int frameSizeY = 600;
-    private int countButton = 7;
+    private int countButton = 8;
 
     public JComboBox getDriveNameComboBox() {
         return driveNameComboBox;
@@ -137,6 +137,10 @@ public class View extends JFrame implements Observer{
 
     public JButton getCopyButton() {
         return copyButton;
+    }
+
+    public JButton getRemoveButton() {
+        return removeButton;
     }
 
     public JButton getRenameButton() {
@@ -224,9 +228,10 @@ public class View extends JFrame implements Observer{
         this.add(commandLinePanel, gbc);
 
         helpButton = new JButton("F1-Help");
-        createFolderButton = new JButton("F2-New folder");
+        renameButton = new JButton("F2-Rename");
         copyButton = new JButton("F5-Copy");
-        renameButton = new JButton("F6-Rename");
+        removeButton = new JButton("F6-Remove");
+        createFolderButton = new JButton("F7-New folder");
         deleteButton = new JButton("F8-Delete");
         terminalButton = new JButton("F9-Terminal");
         exitButton = new JButton("F10-Exit");
@@ -234,9 +239,10 @@ public class View extends JFrame implements Observer{
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, countButton));
         buttonPanel.add(helpButton);
-        buttonPanel.add(createFolderButton);
-        buttonPanel.add(copyButton);
         buttonPanel.add(renameButton);
+        buttonPanel.add(copyButton);
+        buttonPanel.add(removeButton);
+        buttonPanel.add(createFolderButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(terminalButton);
         buttonPanel.add(exitButton);
@@ -265,7 +271,7 @@ public class View extends JFrame implements Observer{
         errorFrame.setVisible(true);
     }
 
-    // This inner class is needed to input icons + text in comboBoxes
+    // This inner class is needed to input icons + text
     public class IconListRenderer
             extends DefaultListCellRenderer {
 
@@ -281,17 +287,22 @@ public class View extends JFrame implements Observer{
                 boolean isSelected, boolean cellHasFocus) {
 
             // Get the renderer component from parent class
-
             JLabel label =
                     (JLabel) super.getListCellRendererComponent(list,
                             value, index, isSelected, cellHasFocus);
 
-            // Get icon to use for the list item value
+            // Set background of list item
+            if ( index % 2 == 0 ) {
+                setBackground(new Color(240, 240, 255));
+            }
+            else {
+                setBackground(Color.white );
+            }
 
+            // Get icon to use for the list item value
             Icon icon = icons.get(value);
 
             // Set icon to display for value
-
             label.setIcon(icon);
             return label;
         }
@@ -310,6 +321,7 @@ public class View extends JFrame implements Observer{
             driverNameComboBox.setRenderer(new IconListRenderer(icons)); // this string is for correct output of combobox
         }
     }
+
     //This method isn't used
     public void fillDriverNameLabels(JComboBox driverNameComboBox, JLabel labelDisk){
         File f = new File(driverNameComboBox.getSelectedItem().toString());
@@ -372,6 +384,7 @@ public class View extends JFrame implements Observer{
         createFolderButton.addActionListener(l);
         copyButton.addActionListener(l);
         renameButton.addActionListener(l);
+        removeButton.addActionListener(l);
         deleteButton.addActionListener(l);
         terminalButton.addActionListener(l);
         exitButton.addActionListener(l);

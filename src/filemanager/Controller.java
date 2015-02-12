@@ -59,6 +59,15 @@ public class Controller implements ActionListener, MouseListener{
         else if(source == view.getHelpButton()){
             view.makeHelpFrame();
         }
+        else if(source == view.getRenameButton()){
+
+        }
+        else if(source == view.getCopyButton()){
+
+        }
+        else if(source == view.getRemoveButton()){
+
+        }
         else if(source == view.getCreateFolderButton()){
             ModalDialog createFolderDialog = new ModalDialog(view, "Create folder");
             if(!createFolderDialog.isCancelled()) {
@@ -68,12 +77,6 @@ public class Controller implements ActionListener, MouseListener{
                     createNewFolder(model2, view.getListModel2(), view.getListOfFiles2(), createFolderDialog.getEditTitle());
                 }
             }
-        }
-        else if(source == view.getCopyButton()){
-
-        }
-        else if(source == view.getRenameButton()){
-
         }
         else if(source == view.getDeleteButton()){
             if(activeModel) {
@@ -86,7 +89,7 @@ public class Controller implements ActionListener, MouseListener{
 
         }
         else if(source == view.getExitButton()){
-
+            System.exit(0);
         }
     }
 
