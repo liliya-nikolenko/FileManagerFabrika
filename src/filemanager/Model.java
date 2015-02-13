@@ -1,8 +1,8 @@
 package filemanager;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.*;
-import java.util.List;
 
 public class Model extends Observable{
 
@@ -32,24 +32,35 @@ public class Model extends Observable{
         return files;
     }
 
-    public List<File> getFileListByDriveName(int drive_id){
+    public File getParentDirectory(){
+        return stackOfFilePath.peek();
+    }
+
+    public File getRemovingParentDirectory(){
+        if(stackOfFilePath.size()==1)
+            return stackOfFilePath.peek();
+        else
+            return stackOfFilePath.pop();
+    }
+
+    public void fillFilesByDriveName(int drive_id){
+        stackOfFilePath.clear();
         stackOfFilePath.push(new File(systemDrivers.get(drive_id).getPath()));
         currentActivePath = systemDrivers.get(drive_id).getPath();
         if(systemDrivers.get(drive_id).listFiles() != null) {
             files = Arrays.asList(systemDrivers.get(drive_id).listFiles());
-            return files;
-        }else
-            return null;
+        }
+        else files = null;
     }
 
-    public List<File> getFileListByPath(File filePath){
+    public void fillFilesByPath(File filePath){
         if(filePath.listFiles() != null) {
             files = Arrays.asList(filePath.listFiles());
             currentActivePath = filePath.getPath();
-            return files;
         }else
-            return null;
+            files = null;
     }
+
     @Override
     public synchronized void addObserver(Observer o){
         super.addObserver(o);
@@ -63,16 +74,11 @@ public class Model extends Observable{
         super.notifyObservers();
     }
     public void setChanged(){
+        super.setChanged();
         notifyObservers();
     }
-    public void setFiles(List<File> files){
-        this.files = files;
-        setChanged();
+    public void setChanged(DefaultListModel listModel){
+        super.setChanged();
+        notifyObservers(listModel);
     }
-
-    public void fileChanged(){
-        setChanged();
-        notifyObservers();
-    }
-
 }

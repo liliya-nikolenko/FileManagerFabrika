@@ -82,7 +82,7 @@ public class View extends JFrame implements Observer{
     private DefaultListModel listModel, listModel2;
     private JList listOfFiles, listOfFiles2;
     private JFrame helpFrame = new JFrame("Help");
-    private JFrame errorFrame = new JFrame("Error");
+    private JFrame errorFrame;
     private int frameSizeX = 800;
     private int frameSizeY = 600;
     private int countButton = 8;
@@ -264,6 +264,7 @@ public class View extends JFrame implements Observer{
     }
 
     public void makeErrorFrame(String textError){
+        errorFrame = new JFrame("Error");
         errorFrame.setSize(frameSizeX/4, frameSizeY/4);
         errorFrame.setLayout(new GridBagLayout());
         JLabel textLabel = new JLabel("<html>" + textError + "<html>");
@@ -397,11 +398,16 @@ public class View extends JFrame implements Observer{
         listOfFiles2.addMouseListener(l);
     }
 
-
     @Override
     public void update(Observable o, Object arg) {
         if(o instanceof Model){
             Model model = (Model) o;
+            if(arg.equals(listModel)){
+                fillList(listModel, listOfFiles, model.getFiles(), model.getParentDirectory());
+            }
+            else if(arg.equals(listModel2)){
+                fillList(listModel2,listOfFiles2, model.getFiles(), model.getParentDirectory());
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.*;
+import java.io.File;
 import java.io.IOException;
 
 public class Controller implements ActionListener, MouseListener{
@@ -25,10 +25,8 @@ public class Controller implements ActionListener, MouseListener{
         view.makeGUI();
         view.fillDriverNameComboBoxes(view.getDriveNameComboBox(), model.getSystemDrivers());
         view.fillDriverNameComboBoxes(view.getDriveNameComboBox2(), model2.getSystemDrivers());
-        //view.fillDriverNameLabels(view.getDriveNameComboBox(), view.getPathLabel());
-        //view.fillDriverNameLabels(view.getDriveNameComboBox2(), view.getPathLabel2());
-        view.fillPathLabels(model.getDesktopPath().toString(), view.getPathLabel()); //just as a variant
-        view.fillPathLabels(model2.getDesktopPath().toString(), view.getPathLabel2()); //just as a variant
+        view.fillPathLabels(model.getDesktopPath().toString(), view.getPathLabel());
+        view.fillPathLabels(model2.getDesktopPath().toString(), view.getPathLabel2());
         view.fillDriverSpaceLabels(view.getDriveNameComboBox(), view.getLabelMemory());
         view.fillDriverSpaceLabels(view.getDriveNameComboBox2(), view.getLabelMemory2());
         view.fillLabelCommandLine(model.getCurrentActivePath());
@@ -43,16 +41,16 @@ public class Controller implements ActionListener, MouseListener{
         if(source == view.getDriveNameComboBox()){
             view.fillPathLabels(view.getDriveNameComboBox().getSelectedItem().toString(), view.getPathLabel());
             view.fillDriverSpaceLabels(view.getDriveNameComboBox(), view.getLabelMemory());
-            view.fillList(view.getListModel(), view.getListOfFiles(),
-                    model.getFileListByDriveName(view.getDriveNameComboBox().getSelectedIndex()), model.getStackOfFilePath().pop());
+            model.fillFilesByDriveName(view.getDriveNameComboBox().getSelectedIndex());
+            model.setChanged(view.getListModel());
             view.fillLabelCommandLine(model.getCurrentActivePath());
             activeModel = true;
         }
         else if(source == view.getDriveNameComboBox2()){
             view.fillPathLabels(view.getDriveNameComboBox2().getSelectedItem().toString(), view.getPathLabel2());
             view.fillDriverSpaceLabels(view.getDriveNameComboBox2(), view.getLabelMemory2());
-            view.fillList(view.getListModel2(), view.getListOfFiles2(),
-                    model2.getFileListByDriveName(view.getDriveNameComboBox2().getSelectedIndex()), model2.getStackOfFilePath().pop());
+            model2.fillFilesByDriveName(view.getDriveNameComboBox2().getSelectedIndex());
+            model2.setChanged(view.getListModel2());
             view.fillLabelCommandLine(model2.getCurrentActivePath());
             activeModel = false;
         }
@@ -72,17 +70,17 @@ public class Controller implements ActionListener, MouseListener{
             ModalDialog createFolderDialog = new ModalDialog(view, "Create folder");
             if(!createFolderDialog.isCancelled()) {
                 if (activeModel) {
-                    createNewFolder(model, view.getListModel(), view.getListOfFiles(), createFolderDialog.getEditTitle());
+                    createNewFolder(model, view.getListModel(), createFolderDialog.getEditTitle());
                 } else {
-                    createNewFolder(model2, view.getListModel2(), view.getListOfFiles2(), createFolderDialog.getEditTitle());
+                    createNewFolder(model2, view.getListModel2(), createFolderDialog.getEditTitle());
                 }
             }
         }
         else if(source == view.getDeleteButton()){
             if(activeModel) {
-                deleteFile(model, view.getListModel(), view.getListOfFiles());
+                deleteFile(model, view.getListModel());
             }else {
-                deleteFile(model2, view.getListModel2(), view.getListOfFiles2());
+                deleteFile(model2, view.getListModel2());
             }
         }
         else if(source == view.getTerminalButton()){
@@ -98,27 +96,29 @@ public class Controller implements ActionListener, MouseListener{
         int index;
         if(e.getSource() == view.getListOfFiles()){
             if(e.getClickCount() == 1){
+                e.consume();
                 activeModel = true;
                 index = ((JList) e.getSource()).locationToIndex(e.getPoint()) - 1;
                 if(index>=0)
                     activeClickFile = model.getFiles().get(index);
             }
-            if (e.getClickCount() == 2 && !e.isConsumed()) {
+            if (e.getClickCount() == 2) {
                 e.consume();
-                if(!fillListByDoubleClick(e, model, view.getListModel(), view.getListOfFiles())){
+                if(!fillListByDoubleClick(e, model, view.getListModel())){
                     openFileByDoubleClick(e, model);
                 }
             }
         }else if(e.getSource() == view.getListOfFiles2()) {
             if(e.getClickCount() == 1){
+                e.consume();
                 activeModel = false;
                 index = ((JList) e.getSource()).locationToIndex(e.getPoint()) - 1;
                 if(index>=0)
                     activeClickFile = model2.getFiles().get(index);
             }
-            if (e.getClickCount() == 2 && !e.isConsumed()) {
+            if (e.getClickCount() == 2) {
                 e.consume();
-                if(!fillListByDoubleClick(e, model2, view.getListModel2(), view.getListOfFiles2())){
+                if(!fillListByDoubleClick(e, model2, view.getListModel2())){
                     openFileByDoubleClick(e, model2);
                 }
             }
@@ -145,21 +145,21 @@ public class Controller implements ActionListener, MouseListener{
 
     }
 
-    public boolean fillListByDoubleClick(MouseEvent e, Model model, DefaultListModel listModel, JList list){
+    public boolean fillListByDoubleClick(MouseEvent e, Model model, DefaultListModel listModel){
         int index = ((JList) e.getSource()).locationToIndex(e.getPoint()) - 1; //+1 parent directory
         if (index == -1) {
             if (!model.getStackOfFilePath().empty()) {
-                view.fillList(listModel, list,
-                            model.getFileListByPath(model.getStackOfFilePath().peek()), model.getStackOfFilePath().pop());
+                model.fillFilesByPath(model.getRemovingParentDirectory());
+                model.setChanged(listModel);
                 view.fillLabelCommandLine(model.getCurrentActivePath());
                 return true;
             }
         }
         if (index >= 0) {
-            if(model.getFiles().get(index).isDirectory()) {
+            if (model.getFiles().get(index).isDirectory()) {
                 model.getStackOfFilePath().push(new File(model.getCurrentActivePath()));
-                view.fillList(listModel, list,
-                        model.getFileListByPath(model.getFiles().get(index)), model.getStackOfFilePath().peek());
+                model.fillFilesByPath(model.getFiles().get(index));
+                model.setChanged(listModel);
                 view.fillLabelCommandLine(model.getCurrentActivePath());
                 return true;
             }
@@ -180,21 +180,25 @@ public class Controller implements ActionListener, MouseListener{
         }
         return false;
     }
-    public void createNewFolder(Model model, DefaultListModel listModel, JList list, String title){
+    public void createNewFolder(Model model, DefaultListModel listModel, String title){
         boolean success = (new File((model.getCurrentActivePath() + "/" + title)).mkdirs());
-        view.fillList(listModel, list,
-                model.getFileListByPath(new File(model.getCurrentActivePath())), model.getStackOfFilePath().peek());
-        if (!success) {
+        if (success){
+            model.fillFilesByPath(new File(model.getCurrentActivePath()));
+            model.setChanged(listModel);
+        }
+        else {
             String errorMessage = "You can't create a new folder";
             view.makeErrorFrame(errorMessage);
         }
     }
 
-    public void deleteFile(Model model, DefaultListModel listModel, JList list){
+    public void deleteFile(Model model, DefaultListModel listModel){
         boolean success = (new File(activeClickFile.getPath())).delete();
-        view.fillList(listModel, list,
-                model.getFileListByPath(new File(model.getCurrentActivePath())), model.getStackOfFilePath().peek());
-        if (!success) {
+        if (success){
+            model.fillFilesByPath(new File(model.getCurrentActivePath()));
+            model.setChanged(listModel);
+        }
+        else {
             String errorMessage = "You can't delete a file";
             view.makeErrorFrame(errorMessage);
         }
