@@ -11,11 +11,12 @@ public class Main {
         model.addObserver(view);
         model2.addObserver(view);
 
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
                 view.setVisible(true);
             }
         });
+
     }
 
 }

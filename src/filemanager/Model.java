@@ -12,6 +12,10 @@ public class Model extends Observable{
     private String currentActivePath = desktopPath.getPath();
     private Stack<File> stackOfFilePath = new Stack<File>();
 
+    Model(){
+        stackOfFilePath.push(desktopPath);
+    }
+
     public Stack<File> getStackOfFilePath() {
         return stackOfFilePath;
     }
@@ -56,10 +60,12 @@ public class Model extends Observable{
     public void fillFilesByPath(File filePath){
         if(filePath.listFiles() != null) {
             files = Arrays.asList(filePath.listFiles());
-            currentActivePath = filePath.getPath();
+            if(!currentActivePath.equals(filePath.getPath()))
+                currentActivePath = filePath.getPath();
         }else
             files = null;
     }
+
 
     @Override
     public synchronized void addObserver(Observer o){

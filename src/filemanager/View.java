@@ -39,16 +39,16 @@ class ModalDialog extends Dialog implements ActionListener{
     public boolean isCancelled() {
         return this.cancelled;
     }
-    ModalDialog(JFrame parent, String title){
+    ModalDialog(JFrame parent, String title, String text){
         super(parent, title, true);
         if (parent != null) {
             Dimension parentSize = parent.getSize();
             Point p = parent.getLocation();
-            setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
+            setLocation(p.x + parentSize.width / 3, p.y + parentSize.height / 3);
         }
         setSize(200, 120);
         setLayout(new GridLayout(2, 2, 3, 3));
-        add(new JLabel("Edit"));
+        add(new JLabel(text));
         add(textField);
         add(okButton);
         add(cancelButton);
@@ -82,7 +82,7 @@ public class View extends JFrame implements Observer{
     private DefaultListModel listModel, listModel2;
     private JList listOfFiles, listOfFiles2;
     private JFrame helpFrame = new JFrame("Help");
-    private JFrame errorFrame;
+    private JFrame warningButton;
     private int frameSizeX = 800;
     private int frameSizeY = 600;
     private int countButton = 8;
@@ -263,13 +263,13 @@ public class View extends JFrame implements Observer{
         helpFrame.setVisible(true);
     }
 
-    public void makeErrorFrame(String textError){
-        errorFrame = new JFrame("Error");
-        errorFrame.setSize(frameSizeX/4, frameSizeY/4);
-        errorFrame.setLayout(new GridBagLayout());
-        JLabel textLabel = new JLabel("<html>" + textError + "<html>");
-        errorFrame.add(textLabel);
-        errorFrame.setVisible(true);
+    public void makeWarningFrame(String textWarning){
+        warningButton = new JFrame("Error");
+        warningButton.setSize(frameSizeX / 4, frameSizeY / 4);
+        warningButton.setLayout(new GridBagLayout());
+        JLabel textLabel = new JLabel("<html>" + textWarning + "<html>");
+        warningButton.add(textLabel);
+        warningButton.setVisible(true);
     }
 
     // This inner class is needed to input icons + text
@@ -397,6 +397,8 @@ public class View extends JFrame implements Observer{
         listOfFiles.addMouseListener(l);
         listOfFiles2.addMouseListener(l);
     }
+
+
 
     @Override
     public void update(Observable o, Object arg) {
