@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         final Model model = new Model();
         final Model model2 = new Model();
-        final View view = new View();
+        final View view = new View(model, model2);
         Controller controller = new Controller(model, model2, view);
         model.addObserver(view);
         model2.addObserver(view);

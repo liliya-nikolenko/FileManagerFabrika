@@ -27,53 +27,8 @@ enum Byte {
     }
 }
 
-class ModalDialog extends Dialog implements ActionListener{
-    private JTextField textField = new JTextField();
-    private JButton okButton = new JButton("Ok");
-    private JButton cancelButton = new JButton("Cancel");
-    private boolean cancelled;
-
-    public String getEditTitle(){
-        return textField.getText();
-    }
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-    ModalDialog(JFrame parent, String title, String text){
-        super(parent, title, true);
-        if (parent != null) {
-            Dimension parentSize = parent.getSize();
-            Point p = parent.getLocation();
-            setLocation(p.x + parentSize.width / 3, p.y + parentSize.height / 3);
-        }
-        setSize(200, 120);
-        setLayout(new GridLayout(2, 2, 3, 3));
-        add(new JLabel(text));
-        add(textField);
-        add(okButton);
-        add(cancelButton);
-        okButton.setActionCommand("okButton");
-        okButton.addActionListener(this);
-        cancelButton.setActionCommand("cancelButton");
-        cancelButton.addActionListener(this);
-        setVisible(true);
-    }
-    public void actionPerformed(ActionEvent e){
-        String command = e.getActionCommand();
-        if (command.equals("okButton")) {
-            this.cancelled = false;
-            setVisible(false);
-        }
-        else if (command.equals("cancelButton")) {
-            this.cancelled = true;
-            setVisible(false);
-        }
-        setVisible(false);
-        dispose();
-    }
-}
-
 public class View extends JFrame implements Observer{
+    private Model leftModel, rightModel;
     private Byte bytes = Byte.GB;
     private JComboBox driveNameComboBox, driveNameComboBox2;
     private JButton helpButton, createFolderButton, copyButton, removeButton, renameButton, deleteButton, terminalButton, exitButton;
@@ -164,6 +119,11 @@ public class View extends JFrame implements Observer{
         this.setLayout(new GridBagLayout());
         this.setSize(frameSizeX, frameSizeY);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    public View(Model model, Model model2) {
+        this();
+        leftModel = model;
+        rightModel = model2;
     }
     public void makeGUI(){
         GridBagConstraints gbc = new GridBagConstraints();
@@ -264,9 +224,9 @@ public class View extends JFrame implements Observer{
     }
 
     public void makeWarningFrame(String textWarning){
-        warningButton = new JFrame("Error");
+        warningButton = new JFrame("Warning");
         warningButton.setSize(frameSizeX / 4, frameSizeY / 4);
-        warningButton.setLayout(new GridBagLayout());
+
         JLabel textLabel = new JLabel("<html>" + textWarning + "<html>");
         warningButton.add(textLabel);
         warningButton.setVisible(true);
@@ -404,10 +364,10 @@ public class View extends JFrame implements Observer{
     public void update(Observable o, Object arg) {
         if(o instanceof Model){
             Model model = (Model) o;
-            if(arg.equals(listModel)){
+            if(o.equals(leftModel)){
                 fillList(listModel, listOfFiles, model.getFiles(), model.getParentDirectory());
             }
-            else if(arg.equals(listModel2)){
+            else if(o.equals(rightModel)){
                 fillList(listModel2,listOfFiles2, model.getFiles(), model.getParentDirectory());
             }
         }

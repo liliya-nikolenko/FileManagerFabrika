@@ -1,19 +1,19 @@
 package filemanager;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
 public class Model extends Observable{
-
-    private File desktopPath = new File(System.getProperty("user.home") + "/Desktop");
-    private List<File> systemDrivers = new ArrayList(Arrays.asList(File.listRoots()));
-    private List<File> files = new ArrayList(Arrays.asList(desktopPath.listFiles()));
-    private String currentActivePath = desktopPath.getPath();
+    private List<File> systemDrivers;
+    private List<File> files;
+    private String currentActivePath;
     private Stack<File> stackOfFilePath = new Stack<File>();
 
     Model(){
-        stackOfFilePath.push(desktopPath);
+        currentActivePath = System.getProperty("user.home") + "/Desktop";
+        stackOfFilePath.push(new File (currentActivePath));
+        systemDrivers = new ArrayList(Arrays.asList(File.listRoots()));
+        files = new ArrayList(Arrays.asList(new File (currentActivePath).listFiles()));
     }
 
     public Stack<File> getStackOfFilePath() {
@@ -22,10 +22,6 @@ public class Model extends Observable{
 
     public String getCurrentActivePath() {
         return currentActivePath;
-    }
-
-    public File getDesktopPath() {
-        return desktopPath;
     }
 
     public List<File> getSystemDrivers() {
@@ -55,6 +51,7 @@ public class Model extends Observable{
             files = Arrays.asList(systemDrivers.get(drive_id).listFiles());
         }
         else files = null;
+        setChanged();
     }
 
     public void fillFilesByPath(File filePath){
@@ -64,6 +61,7 @@ public class Model extends Observable{
                 currentActivePath = filePath.getPath();
         }else
             files = null;
+        setChanged();
     }
 
 
@@ -82,9 +80,5 @@ public class Model extends Observable{
     public void setChanged(){
         super.setChanged();
         notifyObservers();
-    }
-    public void setChanged(DefaultListModel listModel){
-        super.setChanged();
-        notifyObservers(listModel);
     }
 }
