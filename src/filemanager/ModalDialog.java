@@ -24,12 +24,22 @@ public class ModalDialog extends Dialog implements ActionListener {
             Point p = parent.getLocation();
             setLocation(p.x + parentSize.width / 3, p.y + parentSize.height / 3);
         }
-        setSize(200, 120);
-        setLayout(new GridLayout(2, 2, 3, 3));
-        add(new JLabel(text));
-        add(textField);
-        add(okButton);
-        add(cancelButton);
+        setSize(200, 180);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridy = 0;
+        add(new JLabel("<html>" + text + "<html>"), gbc);
+        gbc.gridy = 1;
+        add(textField, gbc);
+        gbc.gridy = 2;
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout());
+        panel.add(okButton);
+        panel.add(cancelButton);
+        add(panel, gbc);
         okButton.setActionCommand("okButton");
         okButton.addActionListener(this);
         cancelButton.setActionCommand("cancelButton");

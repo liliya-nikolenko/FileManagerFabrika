@@ -52,27 +52,33 @@ public class Controller implements ActionListener, MouseListener{
             view.makeHelpFrame();
         }
         else if(source == view.getRenameButton()){
-            ModalDialog renameFileDialog = new ModalDialog(view, "Rename", "Edit title");
-            if(!renameFileDialog.isCancelled()) {
-                if (activeLeftModel) {
-                    renameFile(leftModel, renameFileDialog.getEditTitle());
-                }else {
-                    renameFile(rightModel, renameFileDialog.getEditTitle());
+            if(activeClickFile != null) {
+                ModalDialog renameFileDialog = new ModalDialog(view, "Rename", "Edit title");
+                if (!renameFileDialog.isCancelled()) {
+                    if (activeLeftModel) {
+                        renameFile(leftModel, renameFileDialog.getEditTitle());
+                    } else {
+                        renameFile(rightModel, renameFileDialog.getEditTitle());
+                    }
                 }
             }
         }
         else if(source == view.getCopyButton()){
-            if(activeLeftModel) {
-                copyFile(leftModel, rightModel);
-            }else {
-                copyFile(rightModel, leftModel);
+            if(activeClickFile != null) {
+                if (activeLeftModel) {
+                    copyFile(leftModel, rightModel);
+                } else {
+                    copyFile(rightModel, leftModel);
+                }
             }
         }
         else if(source == view.getRemoveButton()){
-            if(activeLeftModel) {
-                removeFile(leftModel, rightModel);
-            }else{
+            if(activeClickFile != null) {
+                if (activeLeftModel) {
+                    removeFile(leftModel, rightModel);
+                } else {
                     removeFile(rightModel, leftModel);
+                }
             }
         }
         else if(source == view.getCreateFolderButton()){
@@ -86,10 +92,12 @@ public class Controller implements ActionListener, MouseListener{
             }
         }
         else if(source == view.getDeleteButton()){
-            if(activeLeftModel) {
+            if(activeClickFile != null) {
+                if (activeLeftModel) {
                     deleteFile(leftModel);
-            }else {
+                } else {
                     deleteFile(rightModel);
+                }
             }
         }
         else if(source == view.getTerminalButton()){
@@ -236,8 +244,9 @@ public class Controller implements ActionListener, MouseListener{
 
     public void copyFile(Model activeModel, Model passiveModel) {
         if(activeModel.getCurrentActivePath().equals(passiveModel.getCurrentActivePath())){
+            String fileTitle = getFileTitle(activeClickFile);
             ModalDialog copyFile = new ModalDialog(view, "Copy file", "Source and destination path are the same." +
-                    " Do you want to copy file to the same directory? If yes, input new title");
+                    " Do you want to copy " + fileTitle + " to the same directory? If yes, input new title");
             if(!copyFile.isCancelled()){
                 File source = new File(activeClickFile.getPath());
                 File dest = new File(passiveModel.getCurrentActivePath() + "/" + copyFile.getEditTitle() +
@@ -281,7 +290,8 @@ public class Controller implements ActionListener, MouseListener{
 
     public void removeFile(Model activeModel, Model passiveModel){
         if(activeModel.getCurrentActivePath().equals(passiveModel.getCurrentActivePath())){
-            String errorMessage = "Source and destination path are the same. You can't remove";
+            String fileTitle = getFileTitle(activeClickFile);
+            String errorMessage = "Source and destination path are the same. You can't remove " + fileTitle;
             view.makeWarningFrame(errorMessage);
         }
         else {
@@ -313,5 +323,12 @@ public class Controller implements ActionListener, MouseListener{
     public String getFileName(String filename){
         int dotPosition = filename.lastIndexOf("\\") + 1;
         return filename.substring(dotPosition);
+    }
+
+    public String getFileTitle(File file){
+        if(file.isDirectory())
+            return "directory";
+        else
+            return "file";
     }
 }

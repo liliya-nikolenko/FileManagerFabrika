@@ -226,7 +226,10 @@ public class View extends JFrame implements Observer{
     public void makeWarningFrame(String textWarning){
         warningButton = new JFrame("Warning");
         warningButton.setSize(frameSizeX / 4, frameSizeY / 4);
-
+        warningButton.setLayout(new GridLayout());
+        Dimension parentSize = this.getSize();
+        Point p = this.getLocation();
+        warningButton.setLocation(p.x + parentSize.width / 3, p.y + parentSize.height / 3);
         JLabel textLabel = new JLabel("<html>" + textWarning + "<html>");
         warningButton.add(textLabel);
         warningButton.setVisible(true);
