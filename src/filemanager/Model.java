@@ -3,17 +3,20 @@ package filemanager;
 import java.io.File;
 import java.util.*;
 
-public class Model extends Observable{
+public class Model extends Observable implements Runnable{
     private List<File> systemDrivers;
     private List<File> files;
     private String currentActivePath;
     private Stack<File> stackOfFilePath = new Stack<File>();
+    Thread mThread = new Thread(this);
+
 
     Model(){
         currentActivePath = System.getProperty("user.home") + "/Desktop";
         stackOfFilePath.push(new File (currentActivePath));
         systemDrivers = new ArrayList(Arrays.asList(File.listRoots()));
         files = new ArrayList(Arrays.asList(new File (currentActivePath).listFiles()));
+        mThread.start();
     }
 
     public Stack<File> getStackOfFilePath() {
@@ -52,6 +55,7 @@ public class Model extends Observable{
         }
         else files = null;
         setChanged();
+
     }
 
     public void fillFilesByPath(File filePath){
@@ -81,4 +85,18 @@ public class Model extends Observable{
         super.setChanged();
         notifyObservers();
     }
+
+    @Override
+    public void run() {
+            while (true) {
+                try {
+                    List<File> tempFiles = new ArrayList(Arrays.asList(new File(currentActivePath).listFiles()));
+                    if (!tempFiles.equals(files)) {
+                        files = tempFiles;
+                        setChanged();
+                    }
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {/***/}
+            }
+        }
 }
