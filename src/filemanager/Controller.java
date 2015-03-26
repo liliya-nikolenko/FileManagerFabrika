@@ -100,9 +100,9 @@ public class Controller implements ActionListener, MouseListener{
                 }
             }
         }
-        else if(source == view.getTerminalButton()){
+        /*else if(source == view.getTerminalButton()){
             ///
-        }
+        }*/
         else if(source == view.getExitButton()){
             System.exit(0);
         }

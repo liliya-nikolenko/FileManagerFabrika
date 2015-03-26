@@ -40,7 +40,7 @@ public class View extends JFrame implements Observer{
     private JFrame warningButton;
     private int frameSizeX = 800;
     private int frameSizeY = 600;
-    private int countButton = 8;
+    private int countButton = 7;
 
     public JComboBox getDriveNameComboBox() {
         return driveNameComboBox;
@@ -182,6 +182,7 @@ public class View extends JFrame implements Observer{
         commandLinePanel.setLayout(new GridLayout(1, 2));
         labelCommandLine = new JLabel();
         commandLinePanel.add(labelCommandLine);
+        /*
         commandLine = new JTextField(50);
         commandLinePanel.add(commandLine);
 
@@ -194,7 +195,15 @@ public class View extends JFrame implements Observer{
         createFolderButton = new JButton("F7-New folder");
         deleteButton = new JButton("F8-Delete");
         terminalButton = new JButton("F9-Terminal");
-        exitButton = new JButton("F10-Exit");
+        exitButton = new JButton("F10-Exit");*/
+
+        helpButton = new JButton("Help");
+        renameButton = new JButton("Rename");
+        copyButton = new JButton("Copy");
+        removeButton = new JButton("Remove");
+        createFolderButton = new JButton("New folder");
+        deleteButton = new JButton("Delete");
+        exitButton = new JButton("Exit");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, countButton));
@@ -204,7 +213,7 @@ public class View extends JFrame implements Observer{
         buttonPanel.add(removeButton);
         buttonPanel.add(createFolderButton);
         buttonPanel.add(deleteButton);
-        buttonPanel.add(terminalButton);
+        //buttonPanel.add(terminalButton);
         buttonPanel.add(exitButton);
 
         gbc.ipady = 20;
@@ -350,9 +359,9 @@ public class View extends JFrame implements Observer{
         renameButton.addActionListener(l);
         removeButton.addActionListener(l);
         deleteButton.addActionListener(l);
-        terminalButton.addActionListener(l);
+        //terminalButton.addActionListener(l);
         exitButton.addActionListener(l);
-        commandLine.addActionListener(l);
+        //commandLine.addActionListener(l);
 
     }
 
